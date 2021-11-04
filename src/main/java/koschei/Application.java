@@ -10,6 +10,8 @@ public class Application {
                 new AnnotationConfigApplicationContext(AppConfig.class);
         KoscheiTheDeathless koscheiTheDeathless =
                 applicationContext.getBean(KoscheiTheDeathless.class);
+
+        
         System.out.println(koscheiTheDeathless.getRulesByDeth());
     }
 }
