@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+</head>
+    <body>
+        <h1>All Users</h1>
+        <ul th:each="user : ${users}">
+            <li th:text = "${user.getName()}">VALUE</li>
+            <li th:text = "${user.getPassword()}">VALUE</li>
+        </ul>
+        <a href="/admin/add">Create new person</a>
+    </body>
+</html>
