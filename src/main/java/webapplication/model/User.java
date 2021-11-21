@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @Entity
-@Table // имена которые должны быть по умолчанию, лучше не задавать(я имею ввиду если они не отличаются)
+@Table
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

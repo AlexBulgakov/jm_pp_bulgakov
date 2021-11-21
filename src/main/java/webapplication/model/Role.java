@@ -19,7 +19,7 @@ public class Role implements GrantedAuthority {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<User> users;//у тебя юзеров одинаковыхх могут быть много, одно имя и т.д.
+    private List<User> users;
 
     public Role() {
     }
