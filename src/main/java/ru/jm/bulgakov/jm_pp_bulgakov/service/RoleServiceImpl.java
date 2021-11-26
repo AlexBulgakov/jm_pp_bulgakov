@@ -9,17 +9,11 @@ import java.util.Optional;
 
 
 @Service
-public class RoleServiceImpl implements RoleService{
+public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     public RoleServiceImpl(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
-    }
-
-
-    @Override
-    public void addRole(Role role) {
-        roleRepository.save(role);
     }
 
     @Override
@@ -28,13 +22,8 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public Role getRoleById(Long id) {
-        Role role = null;
-        Optional<Role> roleOptional = roleRepository.findById(id);
-        if (roleOptional.isPresent()) {
-            role = roleOptional.get();
-        }
-        return role;
+    public Role findByName(String role) {
+        return roleRepository.findByName(role);
     }
 
 }

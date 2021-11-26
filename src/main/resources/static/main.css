@@ -1,0 +1,36 @@
+.left-sidebar {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 20px;
+}
+
+.right-content-block {
+    padding: 20px 50px 30px 20px;
+}
+
+.right-content-block h1 {
+    padding-bottom: 15px;
+}
+
+.right-content-block header {
+    border-bottom: 1px solid #dee2e6!important;
+    padding: 10px;
+}
+
+.right-content-block h4 {
+    margin: 0;
+    padding: 15px 0 10px 15px;
+}
+
+.right-content-block .form-user {
+    padding: 20px;
+}
+
+.right-content-block label {
+    display: block;
+}
+
+.btn-new-user {
+    display: block;
+    margin: 0 auto;
+}

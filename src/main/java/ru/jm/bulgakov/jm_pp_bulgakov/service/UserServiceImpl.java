@@ -1,5 +1,8 @@
 package ru.jm.bulgakov.jm_pp_bulgakov.service;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.jm.bulgakov.jm_pp_bulgakov.model.User;
 import ru.jm.bulgakov.jm_pp_bulgakov.repository.UserRepository;
@@ -9,12 +12,28 @@ import java.util.Optional;
 
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userDao) {
-        this.userRepository = userDao;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        ru.jm.bulgakov.jm_pp_bulgakov.model.User user = userRepository.findByName(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("GoodBye=)");
+        } else {
+            return new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(), user.getAuthorities());
+        }
+
     }
 
     @Override
@@ -28,28 +47,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUser(User updateUser) {
+        userRepository.save(updateUser);
+    }
+
+    @Override
     public void removeUserById(Long id) {
         userRepository.deleteById(id);
     }
 
-    @Override
-    public void updateUser(User updateUser) {
-        userRepository.save(updateUser);
-
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
-    public User getUserById(Long id) {
-        User user = null;
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent()) {
-            user = userOptional.get();
-        }
-        return user;
-    }
 }
