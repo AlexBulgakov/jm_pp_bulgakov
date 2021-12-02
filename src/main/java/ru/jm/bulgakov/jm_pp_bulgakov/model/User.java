@@ -1,5 +1,6 @@
 package ru.jm.bulgakov.jm_pp_bulgakov.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -7,29 +8,31 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
 
+
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private Long id;
 
     @Column
     private String name;
 
-    @Column
-    private String lastName;
+    private String surname;
 
-    @Column
+
     private int age;
 
-    @Column
+
     private String email;
 
-    @Column
+
     private String password;
 
+    private int rolesIndex;
+
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -40,9 +43,9 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String lastName, int age, String email, String password, Set<Role> roles) {
+    public User(String name, String surname, int age, String email, String password, Set<Role> roles) {
         this.name = name;
-        this.lastName = lastName;
+        this.surname = surname;
         this.age = age;
         this.email = email;
         this.password = password;
@@ -58,12 +61,12 @@ public class User implements UserDetails {
         this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getSurname() {
+        return surname;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public int getAge() {
@@ -82,35 +85,30 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Set<Role> getRoles() {
         return roles;
     }
 
-
-
-
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public int getRolesIndex() {
+        return rolesIndex;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
         return name;
@@ -121,35 +119,40 @@ public class User implements UserDetails {
         return password;
     }
 
-
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
     }
 
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", roles=" + roles +
-                '}';
+    public String rolesToString() {
+        switch (rolesIndex) {
+            case 1:
+                return "[Admin]";
+            case 2:
+                return "[User]";
+            case 3:
+                return "[Admin, User]";
+        }
+        return "Нет роли";
     }
 }

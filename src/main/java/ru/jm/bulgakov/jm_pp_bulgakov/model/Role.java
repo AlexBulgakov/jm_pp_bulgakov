@@ -1,10 +1,15 @@
 package ru.jm.bulgakov.jm_pp_bulgakov.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
+
 
 @Entity
 @Table(name = "roles")
@@ -12,10 +17,11 @@ public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Long id;
+    private int id;
     @Column
     private String name;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
@@ -26,11 +32,11 @@ public class Role implements GrantedAuthority {
         this.name = role;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -43,16 +49,8 @@ public class Role implements GrantedAuthority {
     }
 
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
 
-    public Set<User> getUsers() {
-        return users;
-    }
-
-
-
+    @JsonIgnore
     @Override
     public String toString() {
         if (name.equals("ROLE_ADMIN")) {
@@ -63,6 +61,7 @@ public class Role implements GrantedAuthority {
 
     }
 
+    @JsonIgnore
     @Override
     public String getAuthority() {
         return name;

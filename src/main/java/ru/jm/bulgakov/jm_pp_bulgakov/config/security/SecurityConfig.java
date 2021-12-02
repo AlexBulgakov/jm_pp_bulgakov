@@ -38,9 +38,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
 
                 .antMatchers("/login").anonymous()
-                .antMatchers("/user").authenticated()
+                // защищенные URL
+                .antMatchers("/").authenticated()
                 .antMatchers("/admin").hasRole("ADMIN")
-                .and().formLogin();
+                .antMatchers("DELETE").hasRole("ADMIN")
+                .antMatchers("POST").hasRole("ADMIN")
+                .antMatchers("PATCH").hasRole("ADMIN")
+                .and().csrf().disable();
     }
 
     @Bean

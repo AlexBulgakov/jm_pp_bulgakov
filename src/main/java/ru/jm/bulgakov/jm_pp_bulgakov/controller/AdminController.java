@@ -1,82 +1,75 @@
 package ru.jm.bulgakov.jm_pp_bulgakov.controller;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.jm.bulgakov.jm_pp_bulgakov.model.Role;
 import ru.jm.bulgakov.jm_pp_bulgakov.model.User;
-import ru.jm.bulgakov.jm_pp_bulgakov.service.RoleService;
 import ru.jm.bulgakov.jm_pp_bulgakov.service.UserService;
-
-
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
+
 
 @Controller
 @RequestMapping("/")
 public class AdminController {
-    private final UserService userService;
-    private final RoleService roleService;
+    private final UserService service;
 
-    public AdminController(UserService userService, RoleService roleService) {
-        this.userService = userService;
-        this.roleService = roleService;
-    }
-
-    @GetMapping(value = "/")
-    public String start(){
-        return "redirect:/login";
-    }
-
-    @GetMapping(value = "/user")
-    public String viewUser(Model model, Principal principal) {
-        model.addAttribute("user", userService.findByName(principal.getName()));
-        return "user";
+    public AdminController(UserService service) {
+        this.service = service;
     }
 
     @GetMapping("/admin")
-    public String listUsers(Principal principal, Model model) {
-        model.addAttribute("user", userService.findByName(principal.getName()));
-        model.addAttribute("users", userService.getAllUsers());
+    public String admin(Model model, Principal principal) {
+        model.addAttribute("users", service.getAllUsers());
+        model.addAttribute("thisUser", service.findByName(principal.getName()));
         model.addAttribute("newUser", new User());
-        model.addAttribute("roles", roleService.getAllRoles());
-        return "admin";
+        return "/admin";
     }
 
-
-    @PostMapping(value = "/admin")
-    public String addUser(@ModelAttribute User newUser, @RequestParam(value = "select-roles") String[] checkBoxRoles) {
-        Set<Role> roleSet = new HashSet<>();
-        for (String role : checkBoxRoles) {
-            roleSet.add(roleService.findByName(role));
+    @GetMapping("/user/{id}")
+    public String show(@PathVariable("id") Long id, Model model, Principal principal) {
+        if (!service.isAllowed(id, principal)) {
+            id = service.findByName(principal.getName()).getId();
+            model.addAttribute(service.findByName(principal.getName()));
+        } else {
+            model.addAttribute(service.findById(id));
         }
-        newUser.setRoles(roleSet);
-        userService.addUser(newUser);
+        return "/user";
+    }
 
+    @GetMapping("/user")
+    public void userInfo(Principal principal, Model model) {
+        User user = service.findByName(principal.getName());
+        model.addAttribute(user);
+        show(user.getId(), model, principal);
+    }
+
+    @GetMapping("/admin/new_user")
+    public String newUser(Model model) {
+        model.addAttribute("user", new User());
+        return "/admin/new_user";
+    }
+
+    @PostMapping("/")
+    public String create(@ModelAttribute("user") User user) {
+        service.addUser(user);
         return "redirect:/admin";
     }
 
+    @GetMapping("/user/{id}/edit")
+    public String updateUser(Model model, @PathVariable("id") Long id) {
+        model.addAttribute("user", service.findById(id));
+        return "/admin/update_user";
+    }
 
-    @PostMapping(value = "/admin/{id}/edit")
-    public String editUser(@ModelAttribute User user, @RequestParam(value = "select-roles", required = false) String[] checkBoxRoles) {
-        Set<Role> roleSet = new HashSet<>();
-        for (String role : checkBoxRoles) {
-            roleSet.add(roleService.findByName(role));
-        }
-        user.setRoles(roleSet);
-        userService.updateUser(user);
-
+    @PatchMapping("/user/update")
+    public String update(@ModelAttribute("user") User newUser) {
+        service.updateUser(newUser);
         return "redirect:/admin";
     }
 
-
-    @PostMapping(value = "/admin/{id}/delete")
-    public String remove(@PathVariable("id") Long id) {
-        userService.removeUserById(id);
-
+    @DeleteMapping("/user/delete")
+    public String delete(@ModelAttribute("user") User user) {
+        service.removeUserById(user.getId());
         return "redirect:/admin";
     }
 
